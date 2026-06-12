@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icons/nav/logo.svg">
+    <title>orbit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="navigation-bar">
+        <ul class="nav-list">
+            <li class="logo">
+                <img src="icons/nav/logo.svg" class="navlogo" onclick="navigateInternal('index.htM')">
+            </li>
+
+            <li class="tabs">
+                <img src="icons/nav/g.svg" onclick="navigateInternal('g.htM')">
+                <img src="icons/nav/a.svg" onclick="navigateInternal('a.htM')">
+                <img src="icons/nav/s.svg" onclick="navigateInternal('s.htM')">
+            </li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <h1>404</h1>
+        <p>genuinely dont know how you got here vro</p>
+        <br>
+        <a>
+            <button id="btn" onclick="navigateInternal('index.htM')">return home</button>
+        </a>
+    </div>
+
+    <div id="info">
+        <div class="battery">
+            <img src="icons/nav/battery.svg" id="battery-icon" alt="battery icon">
+            <p id="battery-text"></p>
+        </div>
+        <p>•</p>
+        <p id="time"></p>
+        <p>•</p>
+        <p id="date"></p>
+    </div>
+</body>
+
+<script src="js/particles.js"></script>
+<script src="js/messages.js" defer></script>
+<script src="js/infoupdater.js"></script>
+<script src="js/home.js" defer></script>
+<script src="js/search.js"></script>
+<script src="js/settings.js"></script>
+
+<script>
+    function navigateInternal(url) {
+        window.__setAllowExit?.(true);
+        window.location.href = url;
+    }
+</script>
+</html>
