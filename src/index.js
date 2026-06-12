@@ -20,7 +20,7 @@ app.get("/record", (req, res) => {
 
 app.use((req, res) => {
   res.status(404);
-  res.sendFile(join(publicPath, "404.html"));
+  res.sendFile(join(publicPath, "/404.htM"));
 });
 const server = createServer();
 
