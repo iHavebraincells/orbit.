@@ -1,99 +1,114 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("search") || document.getElementById("searchbar2");
+    // ----- element refs -----
+    // works with id="uv-address" (search page) OR id="search" / id="searchbar2" (other pages)
+    const searchInput = document.getElementById("uv-address")
+        || document.getElementById("search")
+        || document.getElementById("searchbar2");
     const searchFrame = document.getElementById("searchframe");
+    const searchForm  = document.querySelector("#uv-form");
 
-    // encoding
+    // ----- simple encode/decode for URL params (no UV dependency) -----
     const orbitEncode = (str) => btoa(encodeURIComponent(str));
     const orbitDecode = (str) => {
         try { return decodeURIComponent(atob(str)); } catch { return null; }
     };
 
-    // main search
+    // ----- register UV service worker when ready -----
+    const registerUV = async () => {
+        const uv = window.__uv$config;  // double-underscore — matches orb/config.js
+        if (!uv) return;
+        try {
+            await navigator.serviceWorker.register("/orb/sw.js", { scope: uv.prefix });
+        } catch (e) {
+            console.warn("UV service worker failed:", e);
+        }
+    };
+
+    // ----- build iframe src, using UV proxy if available -----
+    const buildSrc = (url) => {
+        const uv = window.__uv$config;
+        if (uv) return uv.prefix + uv.encodeUrl(url);
+        return url;  // fallback: load directly (may be blocked by X-Frame-Options on some sites)
+    };
+
+    // ----- core search function -----
     const performSearch = (rawQuery, isInitialLoad = false) => {
-        if (!rawQuery) return;
+        if (!rawQuery || !rawQuery.trim()) return;
 
-        let formattedQuery = rawQuery.trim();
+        let query = rawQuery.trim();
 
-        // detect domain-like inputs (for example: example.com)
-        const looksLikeDomain = /^[^\s]+\.[^\s]+$/.test(formattedQuery);
+        // turn "example.com" into "https://example.com"
+        const looksLikeDomain = /^[^\s]+\.[^\s]+$/.test(query)
+            && !query.startsWith("http");
+        if (looksLikeDomain) query = "https://" + query;
 
-        if (
-            !formattedQuery.startsWith("http://") &&
-            !formattedQuery.startsWith("https://") && looksLikeDomain
-        ) {
-            formattedQuery = "https://" + formattedQuery;
-        }
+        const isUrl = query.startsWith("http://") || query.startsWith("https://");
 
-        const isUrl = formattedQuery.startsWith("http://") || formattedQuery.startsWith("https://");
-        const encryptedValue = orbitEncode(formattedQuery);
-        const targetUrl = `search.htM?q=${encryptedValue}`;
+        // pick target URL: direct URL → proxy it, plain text → Bing search
+        const targetUrl = isUrl
+            ? buildSrc(query)
+            : buildSrc(`https://www.bing.com/search?q=${encodeURIComponent(rawQuery)}`);
 
-        if (searchInput) {
-            searchInput.value = formattedQuery;
-        }
+        // update address bar display
+        if (searchInput) searchInput.value = query;
 
-        if (searchFrame) {
-            searchFrame.src = isUrl? formattedQuery: `https://www.bing.com/search?q=${encodeURIComponent(rawQuery)}`; // only search engine that works with iframes but ill find something else if theres something better
-        }
+        // load in iframe (no page navigation)
+        if (searchFrame) searchFrame.src = targetUrl;
 
+        // update browser URL so back/forward work
+        const encoded = orbitEncode(query);
         if (!isInitialLoad) {
             if (window.location.pathname.includes("search.htM")) {
-                window.history.pushState({ q: encryptedValue }, "", targetUrl);
+                window.history.pushState({ q: encoded }, "", `search.htM?q=${encoded}`);
             } else {
-                window.location.href = targetUrl;
+                window.location.href = `search.htM?q=${encoded}`;
             }
         }
     };
 
-    // initial load
+    // ----- restore previous search on page load -----
     const params = new URLSearchParams(window.location.search);
     const initialEncrypted = params.get("q");
-
     if (initialEncrypted) {
         const decrypted = orbitDecode(initialEncrypted);
-        if (decrypted) {
-            performSearch(decrypted, true);
-        }
+        if (decrypted) performSearch(decrypted, true);
     }
 
-    // input handler
-    if (searchInput) {
-        searchInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                performSearch(searchInput.value);
-            }
+    // ----- form submit (Enter key or submit button) -----
+    if (searchForm) {
+        searchForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await registerUV();              // ensure SW is registered before first proxy use
+            performSearch(searchInput?.value);
         });
     }
 
-    // history nav
-    window.addEventListener("popstate", () => {
-        const newParams = new URLSearchParams(window.location.search);
-        const newEncrypted = newParams.get("q");
-
-        if (newEncrypted) {
-            const decoded = orbitDecode(newEncrypted);
-            if (decoded) {
-                performSearch(decoded, true);
-            }
-        }
-    });
-
-    // nav buttons
+    // ----- back / forward / refresh buttons -----
     document.getElementById("back")?.addEventListener("click", () => history.back());
     document.getElementById("forward")?.addEventListener("click", () => history.forward());
     document.getElementById("refresh")?.addEventListener("click", () => {
         if (searchFrame) searchFrame.src = searchFrame.src;
     });
 
-    // sync url when iframe src changes
+    // ----- handle browser back/forward -----
+    window.addEventListener("popstate", () => {
+        const p = new URLSearchParams(window.location.search);
+        const enc = p.get("q");
+        if (enc) {
+            const dec = orbitDecode(enc);
+            if (dec) performSearch(dec, true);
+        }
+    });
+
+    // ----- try to sync address bar with iframe URL (same-origin only) -----
     if (searchFrame && searchInput) {
-        searchFrame.onload = () => {
+        searchFrame.addEventListener("load", () => {
             try {
                 const url = searchFrame.contentWindow.location.href;
-                searchInput.value = url;
+                if (url && url !== "about:blank") searchInput.value = url;
             } catch {
-                console.log("external site loaded (cross-origin)");
+                // cross-origin: this is expected, ignore it
             }
-        };
+        });
     }
 });
