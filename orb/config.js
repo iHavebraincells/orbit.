@@ -2,7 +2,7 @@
 
 self.__uv$config = {
   prefix: "/orb/ixl/",
-  bare: "https://bare-server-node-ipte.onrender.com",
+bare: "https://bare-server-node-ipte.onrender.com/",
   encodeUrl: Ultraviolet.codec.base64.encode,
   decodeUrl: Ultraviolet.codec.base64.decode,
   handler: "/orb/handler.js",
