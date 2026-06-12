@@ -14,7 +14,7 @@ html, body {
     box-sizing: border-box;
 }
 
-.search {
+.uv-form {
     width: 300px;
     max-width: 80%;
     padding: 14px 20px;
