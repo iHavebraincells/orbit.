@@ -93,23 +93,29 @@
           -------------------------- */
         const form = document.querySelector("#uv-form");
         const input = document.querySelector("#uv-address");
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            await navigator.serviceWorker.register("/orb/sw.js", {
-                scope: uv$config.prefix,
-            });
-            let url = input.value.trim();
-            if (!url.includes("http")) {
-                if (url.includes(".")) url = "http://" + url;
-                else url = "https://www.google.com/search?hl=en-us&q=" + url;
-            }
-            if (url.includes("now.gg")) {
-                alert("redirecting...");
-                url = "https://nowgg.lol/hub";
-            }
-            sessionStorage.setItem("encodedUrl", uv$config.encodeUrl(url));
-            location.href = "search.htM";
-        });
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await navigator.serviceWorker.register("/orb/sw.js", {
+        scope: uv$config.prefix,
+    });
+
+    let url = input.value.trim();
+    if (!url.includes("http")) {
+        if (url.includes(".")) url = "http://" + url;
+        else url = "https://www.google.com/search?hl=en-us&q=" + url;
+    }
+    if (url.includes("now.gg")) {
+        alert("redirecting...");
+        url = "https://nowgg.lol/hub";
+    }
+
+    const encoded = uv$config.prefix + uv$config.encodeUrl(url);
+    sessionStorage.setItem("encodedUrl", encoded);
+
+    // Load into iframe directly — don't reload the page
+    const frame = document.getElementById("searchframe");
+    frame.src = encoded;
+});
 
         /* -------------------------
              GAME JOIN HANDLER
