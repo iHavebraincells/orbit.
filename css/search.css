@@ -5,7 +5,6 @@ html, body {
     padding: 0;
     overflow: hidden;
 }
-
 * {
     font-family: "Google Sans", sans-serif;
     color: white;
@@ -13,7 +12,6 @@ html, body {
     padding: 0;
     box-sizing: border-box;
 }
-
 #uv-form {
     width: 300px;
     max-width: 80%;
@@ -30,27 +28,24 @@ html, body {
     outline: none;
     transition: all 0.2s ease;
 }
-
 #uv-address:hover {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.08), inset 0 0 12px rgba(255, 255, 255, 0.06);
 }
-
 #uv-address:focus {
     width: 330px;
     transform: scale(1.05);
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08),rgba(0, 0, 0, 0.25));
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.25));
     border: 1px solid rgba(255, 255, 255, 0.25);
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.12), inset 0 0 12px rgba(255, 255, 255, 0.08);
 }
-
 .controls {
     position: fixed;
-    bottom: 10px; 
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
     gap: 8px;
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.5));
@@ -66,7 +61,6 @@ html, body {
     z-index: 100;
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .controls-inner {
     display: flex;
     align-items: center;
@@ -74,7 +68,6 @@ html, body {
     gap: 15px;
     width: 100%;
 }
-
 .topbar {
     position: absolute;
     top: -15px;
@@ -84,7 +77,6 @@ html, body {
     justify-content: center;
     pointer-events: none;
 }
-
 .hide {
     width: 60px;
     height: 6px;
@@ -95,16 +87,13 @@ html, body {
     transition: all 0.2s ease;
     cursor: url(../images/cursors/pointer.png), pointer;
 }
-
 .controls.hidden {
     transform: translateX(-50%) translateY(calc(100% + 10px));
 }
-
 .hide:hover {
     background: rgba(131, 131, 131, 0.3);
     transform: scaleY(1.2);
 }
-
 .controls img {
     width: 50px;
     height: auto;
@@ -112,35 +101,35 @@ html, body {
     user-select: none;
 }
 
+/* KEY FIX: iframe must be position fixed to fill the full viewport */
 #searchframe {
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     border: none;
+    z-index: 0;
 }
 
 a {
     transition: all 0.15s ease;
 }
-
 a:hover {
     transform: scale(1.1);
     cursor: pointer;
 }
-
 .custom-cursor .hide,
 .custom-cursor:hover,
 .custom-cursor:active {
     cursor: url("../images/cursors/cursor.png"), default;
 }
-
 .custom-cursor {
     cursor: url("../images/cursors/cursor.png"), default;
 }
-
 .custom-cursor a:hover {
     cursor: url("../images/cursors/pointer.png"), pointer;
 }
-
 .custom-cursor .search {
     cursor: url("../images/cursors/cursor.png"), text;
 }
