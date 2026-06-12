@@ -23,22 +23,36 @@
 
         <div class="controls-inner">
             <a>
-                <img src="icons/nav/logo.svg" onclick="navigateInternal('index.htM')">
+                <img src="icons/nav/logo.svg" onclick="navigateInternal('index.html')">
             </a>
 
-            <input type="text" id="search" class="search" placeholder="search for something...">
+            <form id="uv-form">
+                <input
+                    id="uv-search-engine"
+                    value="https://www.google.com/search?hl=en-us&q=%s"
+                    type="hidden">
+
+                <input
+                    id="uv-address"
+                    type="text"
+                    placeholder="welcome back"
+                    class="form__input">
+            </form>
 
             <a id="back"><img src="c-icons/previous.png"></a>
             <a id="forward"><img src="c-icons/next.png"></a>
             <a id="refresh"><img src="c-icons/refresh.svg"></a>
         </div>
     </div>
+
     <iframe id="searchframe"></iframe>
 </body>
 
 <script src="js/iframe.js"></script>
 <script src="js/search.js"></script>
 <script src="js/settings.js"></script>
+<script src="/orb/bundle.js" defer></script>
+<script src="/orb/config.js?cdn" defer></script>
 <script>
     function navigateInternal(url) {
         window.__setAllowExit?.(true);
@@ -54,6 +68,44 @@
         hidden = !hidden;
         controls.classList.toggle("hidden", hidden);
     });
+
+/* -------------------------
+     UV FORM HANDLER
+  -------------------------- */
+  const form = document.querySelector("#uv-form");
+  const input = document.querySelector("#uv-address");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    await navigator.serviceWorker.register("/frog/sw.js", {
+      scope: uv$config.prefix,
+    });
+
+    let url = input.value.trim();
+
+    if (!url.includes("http")) {
+      if (url.includes(".")) url = "http://" + url;
+      else url = "https://www.google.com/search?hl=en-us&q=" + url;
+    }
+
+    if (url.includes("now.gg")) {
+      alert("redirecting...");
+      url = "https://nowgg.lol/hub";
+    }
+
+    sessionStorage.setItem("encodedUrl", uv$config.encodeUrl(url));
+    location.href = "search.htM";
+  });
+/* -------------------------
+     GAME JOIN HANDLER
+  -------------------------- */
+  const params = new URLSearchParams(window.location.search);
+  const joinid = params.get("game");
+
+  if (joinid) {
+    location.href = "/share.html?game=" + joinid;
+  }
 </script>
 
 </html>
