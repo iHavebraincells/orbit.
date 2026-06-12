@@ -23,7 +23,7 @@
 
         <div class="controls-inner">
             <a>
-                <img src="icons/nav/logo.svg" onclick="navigateInternal('index.html')">
+                <img src="icons/nav/logo.svg" onclick="navigateInternal('index.htM')">
             </a>
 
             <form id="uv-form">
@@ -78,7 +78,7 @@
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    await navigator.serviceWorker.register("/frog/sw.js", {
+    await navigator.serviceWorker.register("/orb/sw.js", {
       scope: uv$config.prefix,
     });
 
@@ -95,7 +95,7 @@
     }
 
     sessionStorage.setItem("encodedUrl", uv$config.encodeUrl(url));
-    location.href = "search.htM";
+    location.href = "search";
   });
 /* -------------------------
      GAME JOIN HANDLER
