@@ -10,9 +10,9 @@ const bare = createBareServer("/bare/");
 const app = express();
 
 app.use(express.static(publicPath));
-app.use("/frog/", express.static(uvPath));
-app.get("/calculus", (req, res) => {
-  res.sendFile(join(publicPath, "calculus.html"));
+app.use("/orb/", express.static(uvPath));
+app.get("/search.htM", (req, res) => {
+  res.sendFile(join(publicPath, "search.htM"));
 });
 app.get("/record", (req, res) => {
   res.sendFile(join(publicPath, "record.html"));
