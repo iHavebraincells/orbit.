@@ -11,14 +11,14 @@ function isUrl(val = "") {
   }
   function loadNewPage(url) {
     document.getElementById("uv-address-searchbar").blur();
-    window.navigator.serviceWorker.register("/frog/sw.js", {
-      scope: "/frog/ixl/",
+    window.navigator.serviceWorker.register("/orb/sw.js", {
+      scope: "/orb/ixl/",
     });
     if (!isUrl(url)) url = "https://www.google.com/search?hl=en-us&q=" + url;
     else if (!(url.startsWith("https://") || url.startsWith("http://")))
       url = "https://" + url;
     let urlEncoded = __uv$config.encodeUrl(url);
-    urlEncoded = "/frog/ixl/" + urlEncoded;
+    urlEncoded = "/orb/ixl/" + urlEncoded;
     const iframe = document.getElementById("iframeid");
     if (iframe) {
       iframe.src = urlEncoded;
@@ -55,7 +55,7 @@ function isUrl(val = "") {
   
   window.addEventListener("load", function () {
     let encodedUrl = sessionStorage.getItem("encodedUrl");
-    encodedUrl = "/frog/ixl/" + encodedUrl;
+    encodedUrl = "/orb/ixl/" + encodedUrl;
     console.log(encodedUrl);
     const iframe = document.getElementById("iframeid");
     if (iframe) {
